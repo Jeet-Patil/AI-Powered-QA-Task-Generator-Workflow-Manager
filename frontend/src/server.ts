@@ -10,6 +10,7 @@ import { join } from 'node:path';
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
+app.set('trust proxy', true);
 const angularApp = new AngularNodeAppEngine();
 
 const backendUrl = (process.env['BACKEND_URL'] || 'http://localhost:8081').replace(/\/+$/, '');
