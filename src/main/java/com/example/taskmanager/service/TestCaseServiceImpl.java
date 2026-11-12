@@ -210,8 +210,6 @@ public class TestCaseServiceImpl implements TestCaseService {
     // --- Gemini ---
 
     private List<TestCase> callGeminiForTestCases(Task task, String customPrompt) throws Exception {
-        String url = "https://generativelanguage.googleapis.com/v1beta/models/" + geminiModel + ":generateContent";
-
         Map<String, Object> requestBody = Map.of("contents",
                 List.of(Map.of("parts", List.of(Map.of("text", buildPrompt(task, customPrompt))))));
 
@@ -220,30 +218,47 @@ public class TestCaseServiceImpl implements TestCaseService {
         headers.set("x-goog-api-key", geminiApiKey);
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
-        // ponytail: retry 503/429 only. Google's own guidance says these are transient
-        // capacity errors; 404/400 are permanent config bugs and must fail fast.
-        String responseBody = null;
-        for (int attempt = 1; attempt <= 4; attempt++) {
+        // Try the configured Gemini model first, then fall back to stable Flash models
+        // if Google returns transient capacity errors (503/429), 404, or a read timeout.
+        List<String> models = new java.util.ArrayList<>(new java.util.LinkedHashSet<>(
+                List.of(geminiModel, "gemini-2.5-flash", "gemini-2.0-flash")));
+
+        Exception lastError = null;
+        for (String model : models) {
+            String url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent";
             try {
-                ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-                responseBody = response.getBody();
-                System.out.println(">>> Gemini HTTP " + response.getStatusCode() + " (attempt " + attempt + ")");
-                break;
+                String responseBody = postGeminiWithRetry(url, entity, model);
+                JsonNode root = readProviderResponse(responseBody, "Gemini");
+                String textResponse = requireText(
+                        root.path("candidates").path(0).path("content").path("parts").path(0).path("text"),
+                        "Gemini");
+                return parseCases(task, textResponse);
             } catch (org.springframework.web.client.HttpServerErrorException
-                    | org.springframework.web.client.HttpClientErrorException.TooManyRequests e) {
-                if (attempt == 4) throw e;
-                long backoff = 1000L * attempt * attempt;
-                System.err.println(">>> Gemini throttled, retry " + attempt + "/4 in " + backoff + "ms");
-                Thread.sleep(backoff);
+                    | org.springframework.web.client.HttpClientErrorException.TooManyRequests
+                    | org.springframework.web.client.HttpClientErrorException.NotFound
+                    | org.springframework.web.client.ResourceAccessException e) {
+                lastError = e;
+                System.err.println(">>> Gemini model " + model + " unavailable (" + e.getMessage() + "), trying next fallback if available");
             }
         }
+        throw lastError != null ? lastError : new IllegalStateException("All Gemini models failed.");
+    }
 
-        JsonNode root = readProviderResponse(responseBody, "Gemini");
-        String textResponse = requireText(
-                root.path("candidates").path(0).path("content").path("parts").path(0).path("text"),
-                "Gemini");
-
-        return parseCases(task, textResponse);
+    private String postGeminiWithRetry(String url, HttpEntity<Map<String, Object>> entity, String model)
+            throws InterruptedException {
+        for (int attempt = 1; attempt <= 2; attempt++) {
+            try {
+                ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+                System.out.println(">>> Gemini (" + model + ") HTTP " + response.getStatusCode() + " (attempt " + attempt + ")");
+                return response.getBody();
+            } catch (org.springframework.web.client.HttpServerErrorException
+                    | org.springframework.web.client.HttpClientErrorException.TooManyRequests e) {
+                if (attempt == 2) throw e;
+                System.err.println(">>> Gemini (" + model + ") throttled, retry " + attempt + "/2 in 1000ms");
+                Thread.sleep(1000L);
+            }
+        }
+        throw new IllegalStateException("Gemini retry loop exited unexpectedly.");
     }
 
     private JsonNode readProviderResponse(String responseBody, String provider) throws Exception {
