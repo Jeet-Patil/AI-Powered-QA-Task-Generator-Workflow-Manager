@@ -1,0 +1,70 @@
+{
+  "info": {
+    "name": "Task Management API Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Task - Valid (201 Created)",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"API Test Task\",\"description\":\"Verification\",\"priority\":\"HIGH\",\"dueDate\":\"2026-11-01\"}"
+        },
+        "url": "http://localhost:8080/api/tasks"
+      }
+    },
+    {
+      "name": "Create Task - Missing Title (400 Bad Request)",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"\",\"priority\":\"HIGH\"}"
+        },
+        "url": "http://localhost:8080/api/tasks"
+      }
+    },
+    {
+      "name": "Create Task - Past Due Date (400 Bad Request)",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"Past Date Task\",\"priority\":\"LOW\",\"dueDate\":\"2020-01-01\"}"
+        },
+        "url": "http://localhost:8080/api/tasks"
+      }
+    },
+    {
+      "name": "Get All Tasks (200 OK)",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:8080/api/tasks"
+      }
+    },
+    {
+      "name": "Get Non-Existing Task (404 Not Found)",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:8080/api/tasks/99999"
+      }
+    },
+    {
+      "name": "Invalid Status Jump TODO -> COMPLETED (400 Bad Request)",
+      "request": {
+        "method": "PATCH",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"status\":\"COMPLETED\"}"
+        },
+        "url": "http://localhost:8080/api/tasks/1/status"
+      }
+    }
+  ]
+}

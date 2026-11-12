@@ -1,0 +1,138 @@
+/* Global Resets & Typography */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+/* Card Container */
+.card {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  margin-bottom: 1.5rem;
+}
+
+/* Standard Button Base */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+}
+
+/* Button Variants */
+.btn-primary {
+  background-color: #4f46e5 !important;
+  color: #ffffff !important;
+  border-color: #4f46e5 !important;
+}
+.btn-primary:hover:not(:disabled) {
+  background-color: #4338ca !important;
+}
+
+.btn-success {
+  background-color: #16a34a !important;
+  color: #ffffff !important;
+  border-color: #16a34a !important;
+}
+.btn-success:hover:not(:disabled) {
+  background-color: #15803d !important;
+}
+
+.btn-danger {
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
+  border-color: #dc2626 !important;
+}
+.btn-danger:hover:not(:disabled) {
+  background-color: #b91c1c !important;
+}
+
+.btn-warning {
+  background-color: #d97706 !important;
+  color: #ffffff !important;
+  border-color: #d97706 !important;
+}
+.btn-warning:hover:not(:disabled) {
+  background-color: #b45309 !important;
+}
+
+.btn-secondary {
+  background-color: #64748b !important;
+  color: #ffffff !important;
+  border-color: #64748b !important;
+}
+.btn-secondary:hover:not(:disabled) {
+  background-color: #475569 !important;
+}
+
+.btn-outline {
+  background-color: transparent !important;
+  color: #334155 !important;
+  border-color: #cbd5e1 !important;
+}
+.btn-outline:hover:not(:disabled) {
+  background-color: #f8fafc !important;
+  border-color: #94a3b8 !important;
+}
+
+/* Status & Priority Badges */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+/* Priority Colors */
+.badge-low { background-color: #e2e8f0; color: #475569; }
+.badge-medium { background-color: #fef3c7; color: #b45309; }
+.badge-high { background-color: #ffedd5; color: #c2410c; }
+.badge-critical { background-color: #fee2e2; color: #b91c1c; }
+
+/* Task Status Colors */
+.badge-todo { background-color: #f1f5f9; color: #475569; }
+.badge-in_progress { background-color: #e0f2fe; color: #0369a1; }
+.badge-completed { background-color: #dcfce7; color: #15803d; }
+.badge-cancelled { background-color: #f1f5f9; color: #94a3b8; text-decoration: line-through; }
+
+/* Test Execution Result Badges */
+.badge-not_run { background-color: #f1f5f9; color: #64748b; }
+.badge-pass { background-color: #dcfce7; color: #16a34a; }
+.badge-fail { background-color: #fee2e2; color: #dc2626; }
+.badge-blocked { background-color: #fef3c7; color: #d97706; }
+
+/* Test Case Type Badges */
+.badge-positive { background-color: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+.badge-negative { background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+.badge-boundary { background-color: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+.badge-edge { background-color: #faf5ff; color: #7e22ce; border: 1px solid #e9d5ff; }
