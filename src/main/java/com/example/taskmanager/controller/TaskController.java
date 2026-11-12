@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tasks")
-@CrossOrigin(originPatterns = "*")
+@CrossOrigin(originPatterns = "${cors.allowed-origins:*}")
 public class TaskController {
 
     private final TaskService taskService;

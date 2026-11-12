@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Task, CreateTaskRequest, UpdateTaskRequest, StatusUpdateRequest, TestCase, TestCaseStatus, ExecuteTestCaseRequest } from '../models/task.model';
@@ -7,8 +8,14 @@ import { Task, CreateTaskRequest, UpdateTaskRequest, StatusUpdateRequest, TestCa
   providedIn: 'root'
 })
 export class TaskService {
-  private readonly apiUrl = 'http://localhost:8081/api/tasks';
-  private readonly tcUrl = 'http://localhost:8081/api/testcases';
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly baseUrl =
+    isPlatformBrowser(this.platformId) &&
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      ? 'http://localhost:8081'
+      : '';
+  private readonly apiUrl = `${this.baseUrl}/api/tasks`;
+  private readonly tcUrl = `${this.baseUrl}/api/testcases`;
 
   constructor(private http: HttpClient) {}
 

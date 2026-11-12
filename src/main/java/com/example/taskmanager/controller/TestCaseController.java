@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/testcases")
-@CrossOrigin(originPatterns = "*")
+@CrossOrigin(originPatterns = "${cors.allowed-origins:*}")
 public class TestCaseController {
 
     private final TestCaseService testCaseService;
